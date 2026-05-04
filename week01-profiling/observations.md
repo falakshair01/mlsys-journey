@@ -77,9 +77,9 @@ aten::mm  →  CPU: 37ms  |  CUDA: 41ms  |  171 GFLOPs
 - This is NVIDIA's pre-written optimized kernel PyTorch calls automatically
 
 ### Chrome Trace Reading
-```
+
 ![alt text](traces/matmul_trace.png)
-```
+
 The giant pink block = CPU doing nothing, just waiting for GPU to report back.
 This is called **synchronization overhead.**
 
