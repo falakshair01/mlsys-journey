@@ -9,7 +9,7 @@ Secure an **RA (Research Assistant) position** in an MLSys lab for the 2026/2027
 ## My Background
 
 - Computer Engineering graduate, 2024
-- Python backend engineer — FastAPI, Django, Docker, RAGs, on-prem deployment
+- Python backend engineer — FastAPI, Django, Docker, RAGs, DevOps
 - Hardware: RTX 3050 Laptop GPU, 4GB VRAM
 
 ## Research Focus
@@ -31,7 +31,7 @@ mlsys-journey/
 │   ├── attention_profile.py         ← Profile standard attention vs sequence length
 │   └── observations.md              ← Written analysis of profiling results
 │
-├── week02-transformer-profiling/    ← Coming: GPT-2 forward pass profiling
+├── week02-transformer-profiling/    ← GPT-2 forward pass profiling
 │
 ├── week03-vllm-vs-hf/              ← Coming: vLLM vs HuggingFace serving comparison
 │
@@ -50,7 +50,7 @@ mlsys-journey/
 Learn to see where time is wasted before attempting to fix anything.
 
 - [x] Week 1: Profile matmul and attention. Learn memory-bound vs compute-bound.
-- [ ] Week 2: Profile GPT-2 full forward pass
+- [X] Week 2: Profile GPT-2 full forward pass
 - [ ] Week 3: Profile vLLM vs naive HuggingFace serving
 - [ ] Week 4: Write Phase 1 summary blog draft
 
