@@ -1,22 +1,108 @@
 # MLSys Journey
 
-A documented, week-by-week learning and research portfolio focused on **Machine Learning Systems (MLSys)** — specifically LLM inference optimization and hardware-level performance analysis.
+A documented, week-by-week research and engineering portfolio focused on
+**Machine Learning Systems (MLSys)** — specifically LLM inference optimization
+and hardware-level performance analysis.
 
-## Goal
+---
 
-Secure an **RA (Research Assistant) position** in an MLSys lab for the 2026/2027 intake across US, Canada, UAE (MBZUAI), or KSA (KAUST).
+## Why I Started This
 
-## My Background
+A few months ago, a colleague came to me frustrated.
 
-- Computer Engineering graduate, 2024
-- Python backend engineer — FastAPI, Django, Docker, RAGs, DevOps
-- Hardware: RTX 3050 Laptop GPU, 4GB VRAM
+He was trying to run a local LLM on CPU for our company's knowledge base system.
+The model ran — but inference was painfully slow, and accuracy degraded under
+the hardware constraints. When they later moved to a GPU-based server, a
+deep question through the knowledge base still took nearly a minute to answer.
+
+He was not doing anything wrong. The hardware was the problem. But neither of
+us could explain *why* precisely — or what to actually fix.
+
+That question stayed with me. I started reading about how LLMs actually execute
+on hardware. The early days were overwhelming — new terminology everywhere,
+concepts that assumed background I did not have. But somewhere between reading
+about memory bandwidth and compute throughput, something clicked. I was not
+confused anymore. I was curious.
+
+I realized the problem my colleague faced was not unique. Every company
+deploying local LLMs hits the same wall: the model works, but the system
+does not. Inference is slow. Memory runs out. GPU utilization is poor.
+These are not ML problems. They are systems problems.
+
+That is what this repository documents — my journey from "why is this slow"
+to being able to measure, explain, and eventually fix it.
+
+---
+
+## What I Am Building Toward
+
+I am working toward contributing to MLSys research — the field that sits at
+the intersection of machine learning and systems engineering. The engineers
+and researchers in this space are the ones who made LLMs fast enough to
+actually deploy. FlashAttention, PagedAttention, continuous batching —
+these are not model improvements. They are systems improvements. And they
+are what make the difference between a model that works in a notebook
+and a model that serves millions of users.
+
+My background is in backend engineering — FastAPI, Docker, on-prem deployment,
+RAG pipelines. I understand systems. I understand deployment constraints.
+I understand what it means when something works in theory but fails in
+production. This repository is where I am learning to apply that intuition
+at the hardware level.
+
+---
 
 ## Research Focus
 
-> **Machine Learning Systems — LLM Inference Optimization**
->
-> Specifically: identifying and resolving hardware-level memory bottlenecks during LLM inference using profiling, custom Triton kernels, and systems-level analysis of inference frameworks like vLLM.
+**Machine Learning Systems — LLM Inference Optimization**
+
+> Identifying and resolving hardware-level memory bottlenecks during LLM
+> inference using GPU profiling, custom Triton kernels, and systems-level
+> analysis of inference frameworks like vLLM.
+
+### What MLSys Is
+
+MLSys is not about training new models or designing new architectures.
+It is about making existing models run faster, cheaper, and more efficiently
+on real hardware. The problems are concrete:
+
+- Why does attention get slow at long sequences?
+- Why is GPU utilization only 42% during naive serving?
+- Why does vLLM need 0.9GB of infrastructure overhead beyond the model itself?
+- Where exactly is time being wasted, and how do we stop wasting it?
+
+These are the questions this repository works through — with real measurements,
+on real hardware, one week at a time.
+
+---
+
+## Hardware
+
+- NVIDIA RTX 3050 Laptop GPU — 4GB VRAM, 192 GB/s bandwidth
+- Google Colab T4 — for experiments exceeding local VRAM
+
+---
+
+## What I Have Found So Far
+
+Three weeks of profiling have already challenged assumptions:
+
+**Attention is not always the bottleneck.**
+At sequence lengths below ~6,144 tokens, MLP layers consume more GPU time
+than attention — 46% vs 8.8% in GPT-2 at seq=512. The crossover point is
+derivable from architecture dimensions. Optimizing attention for a chatbot
+serving 500-token conversations is solving the wrong problem.
+
+**Serving overhead is a first-class cost.**
+vLLM's infrastructure — CUDA graphs, PagedAttention block tables, the
+continuous batching scheduler — requires ~0.9GB beyond model weights.
+On a 4GB GPU, this causes OOM even when the model fits. Production serving
+systems need larger GPUs not because the models are bigger, but because
+the serving layer itself needs room to operate.
+
+**The bottleneck is never where you assume.**
+Every week so far has corrected a prior assumption with real measurements.
+This is the core skill of MLSys research: profile first, then optimize.
 
 ---
 
@@ -24,22 +110,28 @@ Secure an **RA (Research Assistant) position** in an MLSys lab for the 2026/2027
 
 ```
 mlsys-journey/
-├── README.md                        ← You are here
+├── README.md                            ← You are here
+├── MASTER_OBSERVATIONS.md               ← Top-level findings, updated weekly
 │
 ├── week01-profiling/
-│   ├── matmul_profile.py            ← Benchmark matmul across matrix sizes
-│   ├── attention_profile.py         ← Profile standard attention vs sequence length
-│   └── observations.md              ← Written analysis of profiling results
+│   ├── matmul_profile.py                ← Matmul benchmark across sizes
+│   ├── attention_profile.py             ← Attention profiling vs sequence length
+│   └── observations.md                  ← O(S²) memory scaling proved on real GPU
 │
-├── week02-transformer-profiling/    ← GPT-2 forward pass profiling
+├── week02-transformer-profiling/
+│   ├── gpt2_profile.py                  ← GPT-2 full forward pass profiling
+│   ├── gpt2_scaling.py                  ← Scaling analysis seq=16 to 512
+│   └── observations.md                  ← MLP/attention crossover at S≈6,144
 │
-├── week03-vllm-vs-hf/              ← Coming: vLLM vs HuggingFace serving comparison
+├── week03-vllm-vs-hf/
+│   ├── naive_serving.py                 ← Sequential + batched HuggingFace serving
+│   ├── vllm_serving.py                  ← vLLM on Colab T4
+│   └── observations.md                  ← 6x speedup, 0.9GB serving overhead
 │
-├── week05-triton/                   ← Coming: First Triton kernel (fused softmax)
-│
-├── week11-paper-teardown/           ← Coming: MLSys 2024 paper implementation
-│
-└── blogs/                           ← Drafts for published technical blog posts
+├── week04-blog/                         ← Coming: Phase 1 blog post
+├── week05-triton/                       ← Coming: First Triton kernel
+├── week11-paper-teardown/               ← Coming: MLSys 2024 paper implementation
+└── blogs/                               ← Published technical writing
 ```
 
 ---
@@ -47,71 +139,34 @@ mlsys-journey/
 ## Roadmap
 
 ### Phase 1 — GPU Mental Model + Profiling (Weeks 1–4)
-Learn to see where time is wasted before attempting to fix anything.
-
-- [x] Week 1: Profile matmul and attention. Learn memory-bound vs compute-bound.
-- [X] Week 2: Profile GPT-2 full forward pass
-- [ ] Week 3: Profile vLLM vs naive HuggingFace serving
-- [ ] Week 4: Write Phase 1 summary blog draft
+- [x] Week 1: Proved attention's O(S²) memory scaling on real hardware
+- [x] Week 2: Derived MLP/attention crossover point from architecture dimensions
+- [x] Week 3: Measured vLLM serving overhead and continuous batching speedup
+- [ ] Week 4: Phase 1 blog post — public write-up of findings
 
 ### Phase 2 — Triton Kernels (Weeks 5–10)
-Write real GPU kernels. Measure the difference.
-
-- [ ] Week 5–6: Triton mental model — thread blocks, memory coalescing
-- [ ] Week 7–8: Write fused softmax Triton kernel
+- [ ] Week 5–6: GPU thread model, memory coalescing, Triton fundamentals
+- [ ] Week 7–8: Fused softmax Triton kernel — target the 21% softmax overhead
 - [ ] Week 9–10: Benchmark and publish Blog Post #1
 
 ### Phase 3 — Paper Teardown (Weeks 11–20)
-Pick one MLSys 2024 paper. Implement its core mechanism. Profile it. Write about it.
-
-- [ ] Week 11–12: Select and fully read target paper
-- [ ] Week 13–16: Implement naive version of core mechanism
+- [ ] Week 11–12: Select and fully read one MLSys 2024 / OSDI 2024 paper
+- [ ] Week 13–16: Implement the core mechanism from scratch
 - [ ] Week 17–18: Profile and document bottlenecks
 - [ ] Week 19–20: Publish Blog Post #2 — full technical teardown
 
 ### Phase 4 — Professor Outreach (Weeks 21–28)
-Cold email 20 professors with concrete technical proof attached.
-
-- [ ] Week 21–23: Build target professor spreadsheet
-- [ ] Week 24–25: Read 2 papers per professor
-- [ ] Week 26–28: Send emails in batches of 5
-
-### Phase 5 — Polish + Applications (Weeks 29–32)
-- [ ] GitHub cleanup and README polish
-- [ ] Follow-up emails
-- [ ] Portal applications where professor has responded
+- [ ] Identify 20 target professors in US, Canada, UAE, KSA
+- [ ] Read their recent papers, find specific connection points
+- [ ] Cold email with GitHub and blog attached — technical proof first
 
 ---
 
-## Key Concepts Learned
+## Key Resources
 
-| Concept | Plain English Summary |
+| Resource | What It Taught Me |
 |---|---|
-| Memory-bound operation | GPU compute cores sit idle waiting for data from memory |
-| Compute-bound operation | Memory feeds data fast enough, GPU math units are the bottleneck |
-| GPU Memory Bandwidth | Speed of conveyor belt from VRAM to compute cores (192 GB/s on RTX 3050) |
-| GPU Compute (TFLOPS) | Speed of workers once they have data (9 TFLOPS on RTX 3050) |
-| VRAM | Warehouse size — how much data fits on GPU (4GB on RTX 3050) |
-| cudaDeviceSynchronize | CPU pausing and waiting for GPU to finish |
-| PyTorch Profiler | Stopwatch on every operation — shows exactly where time is spent |
-| FlashAttention insight | Avoid repeated trips to VRAM by keeping data on compute cores |
-
----
-
-## Resources
-
-| Resource | Purpose |
-|---|---|
-| [Making Deep Learning Go Brrrr — Horace He](https://horace.io/brrr_intro.html) | Memory-bound vs compute-bound foundation |
-| [Let's Build GPT — Karpathy](https://www.youtube.com/watch?v=kCc8FmEb1nY) | Transformer intuition from code |
-| [Triton Official Tutorial](https://triton-lang.org/main/getting-started/tutorials/) | Kernel writing |
-| [vLLM Paper — PagedAttention](https://arxiv.org/abs/2309.06180) | Core inference optimization paper |
-| [Orca Paper — Continuous Batching](https://www.usenix.org/conference/osdi22/presentation/yu) | LLM serving efficiency |
-| [MLSys 2024 Accepted Papers](https://mlsys.org/virtual/2024/papers.html) | Paper teardown selection |
-
----
-
-## Contact
-
-Building this portfolio for MLSys RA applications — 2026/2027 intake.
-Focused on inference optimization, GPU profiling, and Triton kernel development.
+| [Making Deep Learning Go Brrrr — Horace He](https://horace.io/brrr_intro.html) | Memory-bound vs compute-bound from first principles |
+| [FlashAttention — Dao et al., 2022](https://arxiv.org/abs/2205.14135) | Why tiling eliminates O(S²) memory |
+| [vLLM / PagedAttention — Kwon et al., 2023](https://arxiv.org/abs/2309.06180) | KV cache as virtual memory |
+| [Orca — Yu et al., 2022](https://www.usenix.org/conference/osdi22/presentation/yu) | Continuous batching and iteration-level scheduling |

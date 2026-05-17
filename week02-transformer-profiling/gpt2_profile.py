@@ -3,7 +3,6 @@ from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from torch.profiler import profile, ProfilerActivity
 import os
 
-os.environ["HF_HOME"] = "./huggingface"
 # Load GPT-2 small (117M parameters)
 model = GPT2LMHeadModel.from_pretrained('gpt2').cuda()
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2')

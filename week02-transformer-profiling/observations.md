@@ -79,7 +79,7 @@ At seq=512, MLP processes each token through two massive matrix multiplies acros
 
 ```
 Per layer MLP work:
-  512 tokens × (768×3072 + 3072×768) = ~4.7 billion operations
+  512 tokens × (768×3072 + 3072×768) = ~4.7 million operations
 
 Per layer Attention work:
   512×512 scores matrix = 262,144 operations
