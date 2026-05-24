@@ -83,9 +83,17 @@ on real hardware, one week at a time.
 
 ---
 
+## Published Writing
+
+| Post | Where |
+|---|---|
+| [I Profiled LLM Inference from First Principles — Here's What I Found](https://medium.com/@falakshair563/i-profiled-llm-inference-from-first-principles-heres-what-i-found-823083e502dc) | Medium — Phase 1 synthesis (Weeks 1–3) |
+
+---
+
 ## What I Have Found So Far
 
-Three weeks of profiling have already challenged assumptions:
+Four weeks of profiling and a published blog post have already challenged assumptions:
 
 **Attention is not always the bottleneck.**
 At sequence lengths below ~6,144 tokens, MLP layers consume more GPU time
@@ -128,7 +136,7 @@ mlsys-journey/
 │   ├── vllm_serving.py                  ← vLLM on Colab T4
 │   └── observations.md                  ← 6x speedup, 0.9GB serving overhead
 │
-├── week04-blog/                         ← Coming: Phase 1 blog post
+├── week04-blog/                         ← Phase 1 blog post (published on Medium)
 ├── week05-triton/                       ← Coming: First Triton kernel
 ├── week11-paper-teardown/               ← Coming: MLSys 2024 paper implementation
 └── blogs/                               ← Published technical writing
@@ -142,7 +150,7 @@ mlsys-journey/
 - [x] Week 1: Proved attention's O(S²) memory scaling on real hardware
 - [x] Week 2: Derived MLP/attention crossover point from architecture dimensions
 - [x] Week 3: Measured vLLM serving overhead and continuous batching speedup
-- [ ] Week 4: Phase 1 blog post — public write-up of findings
+- [x] Week 4: Phase 1 blog post — [published on Medium](https://medium.com/@falakshair563/i-profiled-llm-inference-from-first-principles-heres-what-i-found-823083e502dc)
 
 ### Phase 2 — Triton Kernels (Weeks 5–10)
 - [ ] Week 5–6: GPU thread model, memory coalescing, Triton fundamentals

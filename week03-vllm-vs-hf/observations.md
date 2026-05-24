@@ -79,6 +79,8 @@ This is the problem **Orca's continuous batching** solves.
 | Naive batched | Local RTX 3050 | 2.89s | 1.73 req/s | 42% | 4.2x |
 | **vLLM** | **Colab T4** | **1.99s** | **2.52 req/s** | **~80%+** | **6.0x** |
 
+> Note: this comparison conflates hardware difference (RTX 3050 vs T4) with software optimization. The 6x end-to-end speedup includes both factors. A clean comparison would require running both on identical hardware — not possible with 4GB local VRAM. The infrastructure overhead finding (0.9GB) is hardware-independent and remains valid.
+
 ### Where The Speedup Comes From
 
 **Naive → vLLM improvement (1.45x):**
