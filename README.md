@@ -88,6 +88,7 @@ on real hardware, one week at a time.
 | Post | Where |
 |---|---|
 | [I Profiled LLM Inference from First Principles — Here's What I Found](https://medium.com/@falakshair563/i-profiled-llm-inference-from-first-principles-heres-what-i-found-823083e502dc) | Medium — Phase 1 synthesis (Weeks 1–3) |
+| [I Wrote My First GPU Kernel — Here's What Changed](https://medium.com/@falakshair563/i-wrote-my-first-gpu-kernel-heres-what-changed-3bfdacd6fe57) | Medium — Phase 2 synthesis (Weeks 5–10) |
 
 ---
 
@@ -119,17 +120,19 @@ This is the core skill of MLSys research: profile first, then optimize.
 ```
 mlsys-journey/
 ├── README.md                            ← You are here
-├── MASTER_OBSERVATIONS.md               ← Top-level findings, updated weekly
+├── requirements.txt                     ← Python dependencies
 │
 ├── week01-profiling/
 │   ├── matmul_profile.py                ← Matmul benchmark across sizes
 │   ├── attention_profile.py             ← Attention profiling vs sequence length
-│   └── observations.md                  ← O(S²) memory scaling proved on real GPU
+│   ├── observations.md                  ← O(S²) memory scaling proved on real GPU
+│   └── traces/                          ← Profiler traces (matmul, attention)
 │
 ├── week02-transformer-profiling/
 │   ├── gpt2_profile.py                  ← GPT-2 full forward pass profiling
 │   ├── gpt2_scaling.py                  ← Scaling analysis seq=16 to 512
-│   └── observations.md                  ← MLP/attention crossover at S≈6,144
+│   ├── observations.md                  ← MLP/attention crossover at S≈6,144
+│   └── traces/                          ← GPT-2 profiler traces
 │
 ├── week03-vllm-vs-hf/
 │   ├── naive_serving.py                 ← Sequential + batched HuggingFace serving
@@ -137,9 +140,19 @@ mlsys-journey/
 │   └── observations.md                  ← 6x speedup, 0.9GB serving overhead
 │
 ├── week04-blog/                         ← Phase 1 blog post (published on Medium)
-├── week05-triton/                       ← Coming: First Triton kernel
-├── week11-paper-teardown/               ← Coming: MLSys 2024 paper implementation
-└── blogs/                               ← Published technical writing
+│   └── observations.md
+│
+├── week05-06-triton-basics/             ← GPU thread model + Triton fundamentals
+│   ├── vector_add.py                    ← First Triton kernel, bandwidth measurement
+│   └── observations.md
+│
+├── week07-08-fused-softmax/             ← Fused softmax Triton kernel
+│   ├── naive_softmax.py                 ← Baseline multi-pass softmax
+│   ├── fused_softmax.py                 ← Fused single-pass kernel (1.49x over naive)
+│   └── findings.md
+│
+└── week09-10-benchmark/                 ← Phase 2 benchmark suite + Blog Post #1
+    └── full_benchmark.py                ← 95% bandwidth efficiency at seq=4096
 ```
 
 ---
@@ -153,9 +166,9 @@ mlsys-journey/
 - [x] Week 4: Phase 1 blog post — [published on Medium](https://medium.com/@falakshair563/i-profiled-llm-inference-from-first-principles-heres-what-i-found-823083e502dc)
 
 ### Phase 2 — Triton Kernels (Weeks 5–10)
-- [ ] Week 5–6: GPU thread model, memory coalescing, Triton fundamentals
-- [ ] Week 7–8: Fused softmax Triton kernel — target the 21% softmax overhead
-- [ ] Week 9–10: Benchmark and publish Blog Post #1
+- [x] Week 5–6: GPU thread model, memory coalescing, Triton fundamentals
+- [x] Week 7–8: Fused softmax Triton kernel — target the 21% softmax overhead
+- [x] Week 9–10: Benchmark and publish Blog Post #1 — [published on Medium](https://medium.com/@falakshair563/i-wrote-my-first-gpu-kernel-heres-what-changed-3bfdacd6fe57)
 
 ### Phase 3 — Paper Teardown (Weeks 11–20)
 - [ ] Week 11–12: Select and fully read one MLSys 2024 / OSDI 2024 paper

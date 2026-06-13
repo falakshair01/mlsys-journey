@@ -2,3 +2,5 @@ venv
 .venv
 .env
 huggingface
+__pycache__
+.claude
