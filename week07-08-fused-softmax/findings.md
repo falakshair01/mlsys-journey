@@ -110,12 +110,15 @@ overall_speedup  = 1.074x
 
 # Theoretical ceiling (Amdahl's Law)
 max_speedup      = 1 / (1 - 0.21) = 1.266x
-captured         = 1.074 / 1.266  = 84.8% of maximum possible gain
+captured         = (1.074 - 1) / (1.266 - 1) = 0.074 / 0.266 = 27.9%
+# Note: earlier calc of 84.8% was wrong — divided raw speedups
+#       instead of improvements above baseline.
 ```
 
 Amdahl's Law: no matter how fast softmax becomes, the forward pass
 cannot speed up more than 1.266x because softmax is only 21% of
-total work. We captured 84.8% of that ceiling.
+total work. We captured 27.9% of that ceiling
+((1.074 - 1) / (1.266 - 1) = 0.074 / 0.266).
 
 ---
 
