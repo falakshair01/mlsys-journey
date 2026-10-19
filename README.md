@@ -4,6 +4,26 @@ A documented, week-by-week research and engineering portfolio focused on
 **Machine Learning Systems (MLSys)** — specifically LLM inference optimization
 and hardware-level performance analysis.
 
+
+## Results at a glance
+
+| Experiment | Hardware | Result | Details |
+|---|---|---|---|
+| Transformer profiling (GPT-2, seq 512) | RTX 3050 Laptop | MLP 46% of GPU time vs attention 8.8%; crossover at seq ≈ 6,144 | [week02](week02-transformer-profiling/observations.md) |
+| Naive HuggingFace serving (Qwen2.5-1.5B) | RTX 3050 Laptop | 4.2× throughput from simple batching, GPU utilization still ~42% | [week03](week03-vllm-vs-hf/observations.md) |
+| vLLM serving overhead | RTX 3050 / T4 | ~0.9 GB beyond 3.09 GB of weights → OOM on a 4 GB GPU | [week03](week03-vllm-vs-hf/observations.md) |
+| Fused softmax (Triton) | RTX 3050 Laptop | 1.49× over naive Triton at seq 2048 (0.186 ms vs 0.276 ms), on par with PyTorch; Amdahl caps the forward-pass gain at 1.27× | [week07-08](week07-08-fused-softmax/findings.md) |
+
+### Reproduce
+
+```bash
+pip install -r requirements.txt
+python week02-transformer-profiling/gpt2_profile.py
+python week07-08-fused-softmax/fused_softmax.py   # needs a CUDA GPU with Triton
+```
+
+Each week's `observations.md` / `findings.md` records the hardware, method and raw numbers. Absolute timings will differ on other GPUs.
+
 ---
 
 ## Why I Started This
@@ -94,7 +114,7 @@ on real hardware, one week at a time.
 
 ## What I Have Found So Far
 
-Four weeks of profiling and a published blog post have already challenged assumptions:
+Ten weeks of profiling, kernel work and two published posts have challenged several assumptions:
 
 **Attention is not always the bottleneck.**
 At sequence lengths below ~6,144 tokens, MLP layers consume more GPU time
@@ -137,7 +157,7 @@ mlsys-journey/
 ├── week03-vllm-vs-hf/
 │   ├── naive_serving.py                 ← Sequential + batched HuggingFace serving
 │   ├── vllm_serving.py                  ← vLLM on Colab T4
-│   └── observations.md                  ← 6x speedup, 0.9GB serving overhead
+│   └── observations.md                  ← 4.2x from batching, ~0.9GB vLLM overhead
 │
 ├── week04-blog/                         ← Phase 1 blog post (published on Medium)
 │   └── observations.md
@@ -175,11 +195,6 @@ mlsys-journey/
 - [ ] Week 13–16: Implement the core mechanism from scratch
 - [ ] Week 17–18: Profile and document bottlenecks
 - [ ] Week 19–20: Publish Blog Post #2 — full technical teardown
-
-### Phase 4 — Professor Outreach (Weeks 21–28)
-- [ ] Identify 20 target professors in US, Canada, UAE, KSA
-- [ ] Read their recent papers, find specific connection points
-- [ ] Cold email with GitHub and blog attached — technical proof first
 
 ---
 
